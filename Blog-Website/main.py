@@ -183,15 +183,16 @@ def contact():
         phone = data["phone"]
         message = data["message"]
 
-        with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
-            connection.starttls()
-            connection.login(MY_EMAIL, MY_PASSWORD)
-            connection.sendmail(from_addr=MY_EMAIL,
-                                to_addrs=MY_EMAIL,
-                                msg=f"subject:New Message\n\nName: {name}\nEmail: {email}\nPhone: {phone}\n"
-                                    f"Message: {message}".encode("utf-8"))
-
-        return render_template("contact.html", form=form, h1="Successfully Send Your Message")
+        try:
+            with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
+                connection.starttls()
+                connection.login(MY_EMAIL, MY_PASSWORD)
+                connection.sendmail(from_addr=MY_EMAIL,
+                                    to_addrs=MY_EMAIL,
+                                    msg=f"subject:New Message\n\nName: {name}\nEmail: {email}\nPhone: {phone}\n"
+                                        f"Message: {message}".encode("utf-8"))
+        except smtplib.SMTPAuthenticationError:
+            return render_template("contact.html", form=form, h1="Successfully Send Your Message")
 
     else:
         return render_template("contact.html", form=form, h1="Contact Me")
